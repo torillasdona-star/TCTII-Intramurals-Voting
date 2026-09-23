@@ -95,18 +95,42 @@ footer{text-align:center;opacity:.65;font-size:11px;margin-top:20px}
 <footer>Best Creative Partner Shot • Mr. &amp; Ms. Intramurals 2026</footer>
 </div>
 <script>
-const form=document.getElementById('voteForm');
-const submit=document.getElementById('submit');
-const status=document.getElementById('status');
-document.querySelectorAll('input[name="team"]').forEach(r=>r.addEventListener('change',()=>submit.disabled=false));
-form.addEventListener('submit',e=>{
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbweXzaEanQ3i9B28v0QeHPdPKDlWdqyCkYYy1S9hYnz9dLg6-r5wrmk0A6WXZNXA_BxgA/exec";
+
+const form = document.getElementById('voteForm');
+const submit = document.getElementById('submit');
+const status = document.getElementById('status');
+
+document.querySelectorAll('input[name="team"]').forEach(r =>
+  r.addEventListener('change', () => submit.disabled = false)
+);
+
+form.addEventListener('submit', async e => {
   e.preventDefault();
-  const selected=document.querySelector('input[name="team"]:checked');
-  if(!selected) return;
-  submit.disabled=true;
-  status.textContent='Your selection: '+selected.value+'.';
-  alert('Demo vote selected for '+selected.value+'!\n\nTo record real votes, connect this page to a voting database/backend before publishing it.');
-  submit.disabled=false;
+
+  const selected = document.querySelector('input[name="team"]:checked');
+  if (!selected) return;
+
+  submit.disabled = true;
+  status.textContent = 'Submitting your vote...';
+
+  try {
+    await fetch(SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      body: new URLSearchParams({
+        team: selected.value
+      })
+    });
+
+    status.textContent = 'Your vote has been recorded!';
+    alert('Thank you! Your vote for ' + selected.value + ' has been recorded.');
+
+  } catch (error) {
+    status.textContent = 'Something went wrong. Please try again.';
+    alert('There was a problem submitting your vote.');
+    submit.disabled = false;
+  }
 });
 </script>
 </body>
