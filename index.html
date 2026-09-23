@@ -101,34 +101,41 @@ const form = document.getElementById('voteForm');
 const submit = document.getElementById('submit');
 const status = document.getElementById('status');
 
-document.querySelectorAll('input[name="team"]').forEach(r =>
-  r.addEventListener('change', () => submit.disabled = false)
-);
+document.querySelectorAll('input[name="team"]').forEach(r => {
+  r.addEventListener('change', () => {
+    submit.disabled = false;
+  });
+});
 
 form.addEventListener('submit', async e => {
   e.preventDefault();
 
   const selected = document.querySelector('input[name="team"]:checked');
-  if (!selected) return;
+
+  if (!selected) {
+    alert("Please select a team first.");
+    return;
+  }
 
   submit.disabled = true;
-  status.textContent = 'Submitting your vote...';
+  status.textContent = "Submitting your vote...";
 
   try {
     await fetch(SCRIPT_URL, {
-      method: 'POST',
-      mode: 'no-cors',
+      method: "POST",
+      mode: "no-cors",
       body: new URLSearchParams({
         team: selected.value
       })
     });
 
-    status.textContent = 'Your vote has been recorded!';
-    alert('Thank you! Your vote for ' + selected.value + ' has been recorded.');
+    status.textContent = "Vote recorded successfully!";
+    alert("Thank you! Your vote for " + selected.value + " has been recorded.");
 
   } catch (error) {
-    status.textContent = 'Something went wrong. Please try again.';
-    alert('There was a problem submitting your vote.');
+    console.error(error);
+    status.textContent = "Something went wrong.";
+    alert("Your vote could not be submitted. Please try again.");
     submit.disabled = false;
   }
 });
